@@ -6,7 +6,7 @@ namespace DemoFiles
 {
 	public class HMZHelper
 	{
-		public static void ExportWordToPdf(string docxFilePath, string pdfFilePath, string imgPath, float width, float height,string key)
+		public static string ExportWordToPdf(string docxFilePath, string pdfFilePath, string imgPath, float width, float height,string key)
 		{
 			// Khởi tạo Document từ tệp Word đầu vào
 			Document doc = new Document(docxFilePath);
@@ -31,6 +31,9 @@ namespace DemoFiles
 
 			// Lưu tài liệu dưới dạng PDF
 			doc.Save(pdfFilePath, SaveFormat.Pdf);
+			return pdfFilePath;
 		}
+
+
 	}
 }

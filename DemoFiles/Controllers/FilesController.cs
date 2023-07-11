@@ -21,9 +21,12 @@ namespace DemoFiles.Controllers
 			string imageFilePath = @"E:\signature.png";
 			try
 			{
-				HMZHelper.ExportWordToPdf(wordFilePath, pdfFilePath, imageFilePath, 70, 70, "SignatureKey");
-
-				return Ok();
+				string res = HMZHelper.ExportWordToPdf(wordFilePath, pdfFilePath, imageFilePath, 70, 70, "SignatureKey");
+				//HMZHelperIText7.ExportWordToPdf(wordFilePath, pdfFilePath, imageFilePath, 70, 70, "SignatureKey");
+				// download file
+				byte[] fileBytes = System.IO.File.ReadAllBytes(pdfFilePath);
+				return File(fileBytes, "application/pdf", "Don_Ly_Hon.pdf");
+				
 
 			}
 			catch(Exception ex)
