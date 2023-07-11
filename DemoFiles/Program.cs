@@ -1,4 +1,5 @@
 using DemoFiles.Data;
+using DemoFiles.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -9,6 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HMZContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
 ));
+builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAll", builder =>
+	{
+		builder.AllowAnyOrigin()
+			.AllowAnyMethod()
+			.AllowAnyHeader();
+	});
+});
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

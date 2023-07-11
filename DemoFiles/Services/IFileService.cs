@@ -2,10 +2,10 @@
 {
 	public interface IFileService
 	{
-		Task<MemoryStream> GetFileAsync(string filePath);
-		Task<FileInfo> GetFileInfoAsync(MemoryStream memoryStream);
-		Task DeleteFileAsync(IFormFile file);
+		Task<Stream> GetFileAsync(string filePath);
 		Task<string> DeleteFileAsync(string filePath);
-		Task<string> SaveFileAsync(string filePath, IFormFile file);
-	}
+		Task<string> SaveFileAsync(string filePath, Stream file);
+		Task<string> GetFolderSaveAsync(string filePath);
+        
+    }
 }

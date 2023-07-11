@@ -1,30 +1,60 @@
-﻿namespace DemoFiles.Services
+﻿using DemoFiles.Data;
+
+namespace DemoFiles.Services
 {
 	public class FileService : IFileService
 	{
-		public Task DeleteFileAsync(IFormFile file)
+		private readonly HMZContext _context;
+		private readonly IConfiguration _configuration;
+        string rootPath;
+		public FileService( HMZContext context, IConfiguration configuration)
 		{
-			throw new NotImplementedException();
+			_context = context;
+			_configuration = configuration;
+			rootPath  = _configuration.GetValue<string>("Storage:RootPath");
 		}
-
 		public Task<string> DeleteFileAsync(string filePath)
 		{
-			throw new NotImplementedException();
+			string fullPath = Path.Combine(rootPath, filePath);
+			if(File.Exists(fullPath))
+			{
+				File.Delete(fullPath);
+			}
+			return Task.FromResult(filePath);
 		}
 
-		public Task<MemoryStream> GetFileAsync(string filePath)
+		public Task<Stream> GetFileAsync(string filePath)
 		{
-			throw new NotImplementedException();
+			string fullPath = Path.Combine(rootPath, filePath);
+			if(!File.Exists(fullPath))
+			{
+				throw new FileNotFoundException("File not found", filePath);
+			}
+			return  Task.FromResult<Stream>(new FileStream(fullPath, FileMode.Open));
 		}
 
-		public Task<FileInfo> GetFileInfoAsync(MemoryStream memoryStream)
+		public Task<string> GetFolderSaveAsync(string filePath)
 		{
-			throw new NotImplementedException();
+			string fullPath = Path.Combine(rootPath, filePath);
+			if (!Directory.Exists(Path.GetDirectoryName(fullPath)))
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+			}
+			return Task.FromResult(fullPath);
 		}
 
-		public Task<string> SaveFileAsync(string filePath, IFormFile file)
+		public async Task<string> SaveFileAsync(string filePath, Stream file)
 		{
-			throw new NotImplementedException();
+			string fullPath = Path.Combine(rootPath, filePath);
+			if(!Directory.Exists(Path.GetDirectoryName(fullPath)))
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+			}
+			using (var stream = new FileStream(fullPath, FileMode.Create))
+			{
+				await file.CopyToAsync(stream);
+			}
+			return filePath;
 		}
 	}
 }
