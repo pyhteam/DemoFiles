@@ -8,9 +8,6 @@ namespace DemoFiles
 	{
 		public static void ExportWordToPdf(string docxFilePath, string pdfFilePath, string imgPath, float width, float height,string key)
 		{
-			// Net core 
-			// sử dụng Aspose.Words này để xuất ra file 
-			// Tìm kiém từ này " HMZKey " và chèn hình ảnh vào chỗ đó.
 			// Khởi tạo Document từ tệp Word đầu vào
 			Document doc = new Document(docxFilePath);
 			// Tìm và lấy văn bản trong tài liệu
