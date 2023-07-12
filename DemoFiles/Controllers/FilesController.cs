@@ -16,17 +16,17 @@ namespace DemoFiles.Controllers
 		[HttpPost("signature")]
 		public  IActionResult Post()
 		{
-			string wordFilePath = @"E:\Don Ly Hon.docx";
-			string pdfFilePath = @"E:\HMZOutput\"+Guid.NewGuid().ToString()+".pdf";
+			//string filePath = @"E:\Don_Ly_Hon.pdf";
+			string filePath = @"E:\Don_Ly_Hon.pdf";
+			string pdfOutput = @"E:\HMZOutput\"+Guid.NewGuid().ToString()+".pdf";
 			string imageFilePath = @"E:\signature.png";
 			try
 			{
-				string res = HMZHelper.ExportWordToPdf(wordFilePath, pdfFilePath, imageFilePath, 70, 70, "SignatureKey");
-				//HMZHelperIText7.ExportWordToPdf(wordFilePath, pdfFilePath, imageFilePath, 70, 70, "SignatureKey");
-				// download file
-				byte[] fileBytes = System.IO.File.ReadAllBytes(pdfFilePath);
-				return File(fileBytes, "application/pdf", "Don_Ly_Hon.pdf");
 				
+				//HMZHelperPDF.ReplaceImage(filePath, imageFilePath, pdfOutput);
+				HMZHelperPDF.ReplaceImagesInPdf(filePath, imageFilePath, pdfOutput);
+
+				return Ok(pdfOutput);
 
 			}
 			catch(Exception ex)
