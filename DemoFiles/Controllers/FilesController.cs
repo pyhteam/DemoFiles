@@ -1,4 +1,5 @@
-﻿using DemoFiles.Services;
+﻿using System.Diagnostics;
+using DemoFiles.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoFiles.Controllers
@@ -8,30 +9,54 @@ namespace DemoFiles.Controllers
 	public class FilesController : ControllerBase
 	{
 		private readonly IFileService _fileService;
+        HMZHelperPDF HMZHelperPDF = new HMZHelperPDF();
 		public FilesController(IFileService _fileService)
 		{
 			this._fileService = _fileService;
 		}
 
-		[HttpPost("signature")]
-		public  IActionResult Post()
+		[HttpPost("signature/{key}")]
+		public  IActionResult Post(string key)
 		{
 			//string filePath = @"E:\Don_Ly_Hon.pdf";
-			string filePath = @"E:\Don_Ly_Hon.pdf";
+			string filePath = @"E:\Don_Ly_Hon_Key.pdf";
 			string pdfOutput = @"E:\HMZOutput\"+Guid.NewGuid().ToString()+".pdf";
 			string imageFilePath = @"E:\signature.png";
 			try
 			{
+				// SignatureKey
+				//HMZHelper.ExportToPdf(filePath, imageFilePath, pdfOutput);
+				HMZHelperPDF.ReplaceTextWithImage(filePath, pdfOutput, key, imageFilePath);
 				
-				//HMZHelperPDF.ReplaceImage(filePath, imageFilePath, pdfOutput);
-				HMZHelperPDF.ReplaceImagesInPdf(filePath, imageFilePath, pdfOutput);
-
+                // open the file to see the result
+				Process.Start(new ProcessStartInfo(pdfOutput) { UseShellExecute = true });
 				return Ok(pdfOutput);
 
 			}
 			catch(Exception ex)
 			{
-				return BadRequest(ex.Message);
+				return BadRequest(ex);
+			}
+		}
+		[HttpPost("signature/text/{key}")]
+		public IActionResult PostText(string key, [FromBody] string text)
+		{
+			string filePath = @"E:\Don_Ly_Hon_Key.pdf";
+			string pdfOutput = @"E:\HMZOutput\" + Guid.NewGuid().ToString() + ".pdf";
+
+			try
+			{
+				// SignatureKey
+				//HMZHelperPDF.ReplaceTextWithText(filePath, pdfOutput, key, text);
+				PdfExtensions.ReplaceTextWithText(filePath, pdfOutput, key, text);
+				// open the file to see the result
+				Process.Start(new ProcessStartInfo(pdfOutput) { UseShellExecute = true });
+				return Ok(pdfOutput);
+
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex);
 			}
 		}
 	}
