@@ -10,6 +10,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Font;
 using iText.IO.Font;
 using iText.Kernel.Colors;
+using System.Text;
 
 namespace DemoFiles
 {
@@ -60,7 +61,9 @@ namespace DemoFiles
         }
         public void ReplaceTextWithText(string inputPath, string outputPath, string searchText, string replaceText)
         {
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputPath), new PdfWriter(outputPath));
+
+            PdfWriter writer = new PdfWriter(outputPath);
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputPath), writer);
             PdfFont font = PdfFontFactory.CreateFont("C:/Windows/Fonts/times.ttf", PdfEncodings.IDENTITY_H);
             for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
             {

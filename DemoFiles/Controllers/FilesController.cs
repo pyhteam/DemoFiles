@@ -47,8 +47,8 @@ namespace DemoFiles.Controllers
 			try
 			{
 				// SignatureKey
-				//HMZHelperPDF.ReplaceTextWithText(filePath, pdfOutput, key, text);
-				PdfExtensions.ReplaceTextWithText(filePath, pdfOutput, key, text);
+				HMZHelperPDF.ReplaceTextWithText(filePath, pdfOutput, key, text);
+				//PdfExtensions.ReplaceTextWithText(filePath, pdfOutput, key, text);
 				// open the file to see the result
 				Process.Start(new ProcessStartInfo(pdfOutput) { UseShellExecute = true });
 				return Ok(pdfOutput);
