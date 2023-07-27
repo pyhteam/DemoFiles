@@ -16,50 +16,84 @@ namespace DemoFiles
 {
     public class HMZHelperPDF
     {
-        public void ReplaceTextWithImage(string inputPath, string outputPath, string searchText, string imagePath)
-        {
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputPath), new PdfWriter(outputPath));
-            for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
-            {
-                PdfPage page = pdfDoc.GetPage(i);
-                CustomLocationTextExtractionStrategy strategy = new CustomLocationTextExtractionStrategy();
-                PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
-                processor.ProcessPageContent(page);
-                List<TextInfo> textInfos = strategy.GetTextInfos();
-                for (int j = 0; j < textInfos.Count - searchText.Length + 1; j++)
-                {
-                    bool found = true;
-                    for (int k = 0; k < searchText.Length; k++)
-                    {
-                        if (textInfos[j + k].Text != searchText[k].ToString())
-                        {
-                            found = false;
-                            break;
-                        }
-                    }
-                    if (found)
-                    {
-                        Rectangle startRect = textInfos[j].Rect;
-                        Rectangle endRect = textInfos[j + searchText.Length - 1].Rect;
-                        float x = startRect.GetX();
-                        float y = startRect.GetY();
-                        float width = endRect.GetX() + endRect.GetWidth() - startRect.GetX();
-                        float height = startRect.GetHeight();
+		public static void ReplaceTextWithImage(string inputPath, string outputPath, string searchText, string imagePath, bool isFirst = false)
+		{
+			PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputPath), new PdfWriter(outputPath));
+			PdfCanvasProcessor processor;
+			try
+			{
 
-                        ImageData imageData = ImageDataFactory.Create(imagePath);
-                        Image img = new Image(imageData);
-                        float scale = Math.Min(width / img.GetImageWidth(), height / img.GetImageHeight());
-                        PdfCanvas canvas = new PdfCanvas(page);
-                        // canvas.AddImageWithTransformationMatrix(imageData, scale * img.GetImageWidth(), 0, 0, scale * img.GetImageHeight(), x, y);
-						// xuóng dòng với margin  50px 
-                        canvas.AddImageWithTransformationMatrix(imageData, 80, 0, 0, 80, x, y-90);
+				for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
+				{
+					PdfPage page = pdfDoc.GetPage(i);
+					CustomLocationTextExtractionStrategy strategy = new CustomLocationTextExtractionStrategy();
+					processor = new PdfCanvasProcessor(strategy);
+					processor.ProcessPageContent(page);
+					List<TextInfo> textInfos = strategy.GetTextInfos();
+					for (int j = 0; j < textInfos.Count - searchText.Length + 1; j++)
+					{
+						bool found = true;
+						for (int k = 0; k < searchText.Length; k++)
+						{
+							if (textInfos[j + k].Text != searchText[k].ToString())
+							{
+								found = false;
+								break;
+							}
+						}
+						if (found)
+						{
+							Rectangle startRect = textInfos[j].Rect;
+							Rectangle endRect = textInfos[j + searchText.Length - 1].Rect;
+							float x = startRect.GetX();
+							float y = startRect.GetY();
+							float width = endRect.GetX() + endRect.GetWidth() - startRect.GetX();
+							float height = startRect.GetHeight();
 
-                    }
-                }
-            }
-            pdfDoc.Close();
-        }
-        public void ReplaceTextWithText(string inputPath, string outputPath, string searchText, string replaceText)
+							ImageData imageData = ImageDataFactory.Create(imagePath);
+							Image img = new Image(imageData);
+
+							float originalWidth = img.GetImageWidth();
+							float originalHeight = img.GetImageHeight();
+
+							// Tính tỷ lệ co giãn theo chiều dọc và chiều ngang
+							float targetSize = 110; // Square pixels
+							float ratioX = (float)targetSize / originalWidth;
+							float ratioY = (float)targetSize / originalHeight;
+
+							// Tính tỷ lệ co giãn tối thiểu
+							float ratio = Math.Min(ratioX, ratioY);
+
+							// Tính kích thước mới dựa vào tỷ lệ co giãn
+							int newWidth = (int)(originalWidth * ratio);
+							int newHeight = (int)(originalHeight * ratio);
+
+							PdfCanvas canvas = new PdfCanvas(page);
+							// margin-bottom  50px : y-50
+							canvas.AddImageWithTransformationMatrix(imageData, newWidth, 0, 0, newHeight, x, y - 60);
+							if (isFirst)
+							{
+								break;
+							}
+						}
+					}
+				}
+				pdfDoc.Close();
+			}
+			catch (Exception ex)
+			{
+				/// Khi mà bị lỗi thì tắt proccess hoặc kết thúc luôn cái PDF đi
+				// Release the write access to the output file before throwing the exception
+				if (pdfDoc != null)
+				{
+					pdfDoc.Close();
+				}
+				// Restore the original input file to its original state
+				File.Copy(inputPath, outputPath, true);
+				throw;
+			}
+		}
+		public void ReplaceTextWithText(string inputPath, string outputPath, string searchText, string replaceText)
         {
 
             PdfWriter writer = new PdfWriter(outputPath);

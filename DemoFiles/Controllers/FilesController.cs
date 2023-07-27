@@ -19,16 +19,17 @@ namespace DemoFiles.Controllers
 		public  IActionResult Post(string key)
 		{
 			//string filePath = @"E:\Don_Ly_Hon.pdf";
-			string filePath = @"E:\Don_Ly_Hon_Key.pdf";
+			string filePath = @"E:\test.pdf";
 			string pdfOutput = @"E:\HMZOutput\"+Guid.NewGuid().ToString()+".pdf";
 			string imageFilePath = @"E:\signature.png";
 			try
 			{
 				// SignatureKey
 				//HMZHelper.ExportToPdf(filePath, imageFilePath, pdfOutput);
+				//PdfExtensions.ReplaceTextWithImage(filePath, pdfOutput, key, imageFilePath);
 				HMZHelperPDF.ReplaceTextWithImage(filePath, pdfOutput, key, imageFilePath);
-				
-                // open the file to see the result
+
+				// open the file to see the result
 				Process.Start(new ProcessStartInfo(pdfOutput) { UseShellExecute = true });
 				return Ok(pdfOutput);
 
