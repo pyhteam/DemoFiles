@@ -26,12 +26,12 @@ namespace DemoFiles.Controllers
 			{
 				// SignatureKey
 				//HMZHelper.ExportToPdf(filePath, imageFilePath, pdfOutput);
-				//PdfExtensions.ReplaceTextWithImage(filePath, pdfOutput, key, imageFilePath);
-				HMZHelperPDF.ReplaceTextWithImage(filePath, pdfOutput, key, imageFilePath);
+				PdfExtensions.ReplaceTextWithImage(filePath, filePath, key, imageFilePath);
+				//HMZHelperPDF.ReplaceTextWithImage(filePath, filePath, key, imageFilePath);
 
 				// open the file to see the result
-				Process.Start(new ProcessStartInfo(pdfOutput) { UseShellExecute = true });
-				return Ok(pdfOutput);
+				Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+				return Ok(filePath);
 
 			}
 			catch(Exception ex)
